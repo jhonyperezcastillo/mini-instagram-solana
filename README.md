@@ -29,7 +29,7 @@ mini-instagram/
 
 ## 🚀 Enlace desplegado
 
-- Frontend en Vercel: _[pendiente de agregar]_
+- Frontend en Vercel: https://mini-instagram-solana-ss7z.vercel.app/
 - Última transacción de ejemplo:  
   https://explorer.solana.com/tx/5gfjPf9bPmA1NWQJaLwrNMDDGE9EsKVzYc9NFw9TYfgGCx9o896tAWj8nhVmB8JF9qQBS1ocNdd6btyRQ1BGCAsF?cluster=devnet
 
@@ -87,4 +87,4 @@ Abre `http://localhost:3000` para usar la dApp.
 
 ## 📬 Contacto
 
-Para consultas o feedback: _[tu correo o Discord si querés ponerlo]_
+Para consultas o feedback: jhonyperez0375
