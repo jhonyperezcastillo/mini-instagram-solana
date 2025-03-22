@@ -1,19 +1,20 @@
 import { AnchorProvider, Program, Wallet as AnchorWallet, Idl } from "@coral-xyz/anchor";
-import { 
-  Connection, 
-  PublicKey, 
-  SystemProgram
-} from "@solana/web3.js";
+import { Connection, PublicKey, SystemProgram } from "@solana/web3.js";
 import idl from "../idl.json";
 import { WalletAdapter } from "@solana/wallet-adapter-base";
 
-// ✅ Dirección del programa obtenida correctamente del IDL
-const programID: PublicKey = new PublicKey((idl as Idl & { metadata?: { address?: string } }).metadata?.address ?? "CSSiDf2hnmct2dCz9zb6ZjS4pnwQHXSP28dYJCL5QKjH");
+// ✅ Dirección del programa obtenida correctamente del IDL (sin usar `any`)
+const programID: PublicKey = new PublicKey(
+  (idl as Idl & { metadata?: { address?: string } }).metadata?.address ??
+    "CSSiDf2hnmct2dCz9zb6ZjS4pnwQHXSP28dYJCL5QKjH"
+);
 
 // ✅ Conexión a la red de Solana (Devnet)
-const getConnection = () => new Connection("https://api.devnet.solana.com", "confirmed");
+const getConnection = (): Connection => {
+  return new Connection("https://api.devnet.solana.com", "confirmed");
+};
 
-// ✅ Función para obtener el provider
+// ✅ Provider usando Anchor y el adaptador de wallet
 const getProvider = (wallet: WalletAdapter): AnchorProvider => {
   if (!wallet || !wallet.publicKey) {
     throw new Error("Wallet not connected");
@@ -25,13 +26,13 @@ const getProvider = (wallet: WalletAdapter): AnchorProvider => {
   });
 };
 
-// ✅ Corrección: El programa en Anchor debe recibir solo el IDL y el provider
+// ✅ Devuelve el programa ya inicializado con el IDL
 const getProgram = (wallet: WalletAdapter): Program => {
   const provider = getProvider(wallet);
-  return new Program(idl as Idl, provider); // ❌ Eliminamos el `programID`
+  return new Program(idl as Idl, provider); // No se necesita el programID aquí
 };
 
-// ✅ Función para enviar un post a la blockchain
+// ✅ Envía la transacción para crear un post
 export async function sendTransactionToSolana(
   wallet: WalletAdapter,
   content: string
@@ -42,14 +43,12 @@ export async function sendTransactionToSolana(
 
   const program = getProgram(wallet);
 
-  // ✅ Generar la PDA correcta para almacenar el post
   const [postPDA] = PublicKey.findProgramAddressSync(
     [Buffer.from("post"), wallet.publicKey.toBuffer(), Buffer.from(content)],
     programID
   );
 
   try {
-    // ✅ Llamar al método `createPost` en el programa de Anchor
     const tx = await program.methods
       .createPost(content)
       .accounts({
@@ -67,29 +66,4 @@ export async function sendTransactionToSolana(
   }
 }
 
-export { getProvider, getProgram };
-
-export async function fetchPosts(wallet: WalletAdapter): Promise<any[]> {
-  const connection = getConnection();
-  const program = getProgram(wallet);
-
-  // Buscamos todas las cuentas que coincidan con el tipo `PostAccount`
-  const postAccounts = await connection.getProgramAccounts(program.programId, {
-    filters: [
-      {
-        dataSize: 8 + 32 + 280 // Discriminador + Pubkey + String estimado (ajústalo si cambia)
-      }
-    ]
-  });
-
-  // Decodificamos el contenido usando la IDL
-  return postAccounts.map(({ pubkey, account }) => {
-    const decoded = program.coder.accounts.decode("PostAccount", account.data);
-    return {
-      pubkey: pubkey.toBase58(),
-      author: decoded.author.toBase58(),
-      content: decoded.content,
-    };
-  });
-}
-
+export { getConnection, getProvider, getProgram };
