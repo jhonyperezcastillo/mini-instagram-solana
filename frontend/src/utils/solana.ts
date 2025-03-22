@@ -8,7 +8,7 @@ import idl from "../idl.json";
 import { WalletAdapter } from "@solana/wallet-adapter-base";
 
 // ✅ Dirección del programa obtenida correctamente del IDL
-const programID: PublicKey = new PublicKey((idl as any).metadata?.address || "CSSiDf2hnmct2dCz9zb6ZjS4pnwQHXSP28dYJCL5QKjH");
+const programID: PublicKey = new PublicKey((idl as Idl & { metadata?: { address?: string } }).metadata?.address ?? "CSSiDf2hnmct2dCz9zb6ZjS4pnwQHXSP28dYJCL5QKjH");
 
 // ✅ Conexión a la red de Solana (Devnet)
 const getConnection = () => new Connection("https://api.devnet.solana.com", "confirmed");
