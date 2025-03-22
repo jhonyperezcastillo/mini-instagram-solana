@@ -1,19 +1,11 @@
 "use client";
+
 import { useEffect, useState } from "react";
-import { fetchPosts } from "@/utils/post";
+import { fetchPosts, PostWithPubkey } from "@/utils/post"; // ✅ Importamos correctamente
 import { useWallet } from "@solana/wallet-adapter-react";
 
-// Definimos una interfaz para la estructura del post
-interface Post {
-  account: {
-    content: string;
-    // Añade aquí otros campos que pueda tener tu post
-  };
-  // Puede que necesites más propiedades como publicKey, etc.
-}
-
 export default function Dashboard() {
-  const [posts, setPosts] = useState<Post[]>([]);
+  const [posts, setPosts] = useState<PostWithPubkey[]>([]);
   const { wallet } = useWallet();
 
   useEffect(() => {
@@ -22,15 +14,15 @@ export default function Dashboard() {
         console.error("Wallet not connected");
         return;
       }
-      
+
       try {
         const fetchedPosts = await fetchPosts(wallet.adapter);
-        setPosts(fetchedPosts as Post[]);
+        setPosts(fetchedPosts);
       } catch (error) {
         console.error("Error fetching posts:", error);
       }
     };
-    
+
     if (wallet) {
       getPosts();
     }
@@ -46,7 +38,8 @@ export default function Dashboard() {
         {posts.length > 0 ? (
           posts.map((post, index) => (
             <div key={index} className="bg-gray-100 p-4 rounded-lg">
-              <p>{post.account.content}</p>
+              <p className="text-base">{post.content}</p>
+              <p className="text-xs text-gray-500 mt-1">Author: {post.author}</p>
             </div>
           ))
         ) : (
