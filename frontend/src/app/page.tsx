@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { fetchPosts, PostWithPubkey } from "@/utils/post"; // ✅ Usamos la interfaz exportada
+import { fetchPosts, PostWithPubkey } from "@/utils/post"; // ✅ We use the exported interface
 import { useWallet } from "@solana/wallet-adapter-react";
 import PostForm from "@/app/components/PostForm";
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
@@ -19,7 +19,7 @@ export default function Dashboard() {
 
       try {
         const fetchedPosts = await fetchPosts(wallet.adapter);
-        setPosts(fetchedPosts); // ✅ ya es tipo PostWithPubkey[]
+        setPosts(fetchedPosts); // ✅ already typed as PostWithPubkey[]
       } catch (error) {
         console.error("Error fetching posts:", error);
       }
@@ -42,7 +42,7 @@ export default function Dashboard() {
 
       {/* Main Content */}
       <div className="main-content">
-        <h2>📢 Publicar Post</h2>
+        <h2>📢 Publish Post</h2>
 
         {/* Post Form */}
         <PostForm />
@@ -50,7 +50,7 @@ export default function Dashboard() {
         {/* Message when not connected */}
         {!wallet && (
           <div className="message">
-            ⚠️ Por favor conecta tu wallet para ver y crear posts.
+            ⚠️ Please connect your wallet to view and create posts.
           </div>
         )}
       </div>
@@ -62,12 +62,12 @@ export default function Dashboard() {
             posts.map((post, index) => (
               <div key={index} className="post">
                 <p>📝 {post.content}</p>
-                <p className="text-xs text-gray-500 mt-1">Autor: {post.author}</p>
+                <p className="text-xs text-gray-500 mt-1">Author: {post.author}</p>
               </div>
             ))
           ) : (
             <div className="post">
-              <p>🎉 No hay posts todavía. ¡Sé el primero en publicar algo!</p>
+              <p>🎉 No posts yet. Be the first to publish something!</p>
             </div>
           )}
         </div>
